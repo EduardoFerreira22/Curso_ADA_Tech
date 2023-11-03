@@ -10,4 +10,6 @@
 
 - comando git push
 
-* alteração no GitHub
+* comando git pull
+
+* comando git fech
