@@ -12,4 +12,4 @@
 
 * comando git pull
 
-* comando git fech
+* comando git fetch
