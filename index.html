@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Assistente</title>
+</head>
+
+<body>
+  <h1>Assistente de Chat</h1>
+  <div>
+    <input type="text" id="pergunta" placeholder="Faça uma pergunta...">
+    <button id="enviar">Enviar</button>
+  </div>
+  <div id="resposta"></div>
+
+  <script>
+    const botaoEnviar = document.getElementById('enviar');
+    const campoPergunta = document.getElementById('pergunta');
+    const respostaDiv = document.getElementById('resposta');
+
+    botaoEnviar.addEventListener('click', () => {
+      const pergunta = campoPergunta.value;
+
+      // Envia a pergunta para o backend
+      fetch('/pergunta', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ pergunta: pergunta })
+      })
+        .then(response => response.json())
+        .then(data => {
+          respostaDiv.innerHTML = data.resposta;
+        });
+    });
+  </script>
+</body>
+
+</html>
