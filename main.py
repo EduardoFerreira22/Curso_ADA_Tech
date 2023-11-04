@@ -1,47 +1,93 @@
 import pyodbc
-from tkinter import messagebox
+from tkinter import *
+from tkinter import Tk,ttk
+from tkcalendar import Calendar,DateEntry
 from collections import Counter
 import random
+import sqlite3
 
 
-class Conections():
-    def conect_SqlServer():
+#dicionários de fontes e cores
+st_f = {'f1':('M Hei PRC', 10, 'bold'),'f2':('Helvetica', 8,'bold','italic'),'f3':('Helvetica', 10, 'bold'),'f4':("Helvetica", 12, "bold"),'f5':('Helvetica', 7, 'italic'),'f6':('New', 9),'f7':('Arial', 10, 'bold')}
+
+#DICIONÁRIO DE CORES USADAS DENTRO DO PROGRAMA.
+# C REPRESENTA CORES
+		#CORES	LARANJA			BRANCO		 AZUL ESCURO	AZUL CEU	  VERDE			VERMELHO
+c: dict = {'1':'#e69138', '2':'#ffffff','3':'#033364', '4':'#f0ffff','5':'#44ab4c','6':'#e32636','7':'#000000'}
+root = Tk()
+class Aplication:
+    def __init__(self):
+        self.root = root
+        self.winConfig()
+        self.frames()
+        self.windgets_app()
+        root.mainloop()
         pass
-    def conn_SqLite3(self):
-        import sqlite3
-        conn = sqlite3.connect('MegaData.db')
-        cursor = conn.cursor()
-        try:
-            cursor.execute(''' CREATE TABLE  IF NOT EXISTS HIST_MEGA_SENA
-                        (ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-                        ,CONCURSO INTEGER , DATA_CONCURSO DATE, APOSTA TEXT, VENCEDOR TEXT)''')
+    def winConfig(self):
+        self.root.geometry("400x300")
+        self.root.config(bg=c['3'])
+        self.root.resizable(False,False)# impede que a tela seja maximizada ou minimizada
+        #Define que a tela sempre seja criada no meio da tela do computador--------------------------------------------------------------
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        win_width = 400
+        win_height = 300
+        # Calcula as coordenadas para centralizar a janela
+        x = int(screen_width / 2 - win_width / 2)
+        y = int(screen_height / 2 - win_height / 1)
+        # Define as coordenadas da janela
+        self.root.geometry(f"{win_width}x{win_height}+{x}+{y}")
+        #--------------------------------------------------------------------------------------------------------------------------------
+    def frames(self):
+        self.fm_superior = Frame(self.root,width=378, height=160)
+        self.fm_superior.place_configure(x=10,y=45)
         
+        self.fm_baixo = Frame(self.root,width=378,height=70)
+        self.fm_baixo.place_configure(x=10,y=215)
+
+    def windgets_app(self):
+        self.style = ttk.Style()
+        self.style.configure('my.DataEntry.TButton',
+                fieldbackground='light green',
+                background='dark green',
+                foreground=c['3'],
+                arrowcolor='white'
+                )
+
+        self.entry_concurso = Entry(self.fm_superior)
+        self.entry_concurso.place_configure(x=20, y=20, width=100,height=25)
+
+        self.data_conc = DateEntry(self.fm_superior,style='my.DataEntry.TButton',width=12,locale='pt_br',font=st_f['f6'])
+        self.data_conc.place_configure(x=150, y=20, height=27)
+
+        self.bt_pesquisar = Button(self.fm_superior,text="Pesquisar",font=st_f['f2'])
+        self.bt_pesquisar.place_configure(x=280, y=20, width=90, height=25)
+
+        self.entry_num = Entry(self.fm_superior)
+        self.entry_num.place_configure(x=20, y=70, width=175,height=25)
+
+        self.options= ttk.Combobox(self.fm_superior,values=['Sim','Não'])
+        self.options.place_configure(x=215, y=70, width=50,height=25)
+        self.options.bind("<<ComboboxSelected>>", self.new_layout)
+
+    def new_layout(self,event=None):
+        if self.options.get() == "Sim":
+            self.valor_vencedor = Entry(self.fm_superior)
+            self.valor_vencedor.place_configure(x=20,y=120,width=175, height=25)
+
+
+
+
+
+if __name__ == "__main__":
+    Aplication()
+
          
-            if cursor:
-                messagebox.showinfo("Sucesso!", "Tabela criada com sucesso!")
-
-        except Exception as e:
-            print(f"Não foi possível criar a tabela {e}")
-
-conect = Conections()
-conect.conn_SqLite3()
-        
 
 
 def insert_in_database():
-    # Configurações de conexão com o banco de dados SQL Server
-    conexao = pyodbc.connect(
-        'DRIVER={SQL Server};'
-        f'SERVER=DESKTOP-S778AIB\\ED_SYSTEM;'
-        'DATABASE=My_Projects;'
-        'UID=systemadm;'
-        'PWD=1234;'
-    )
-    cursor = conexao.cursor()
-
-    if cursor:
-        print("Conectado com sucesso!")
-
+    conn = sqlite3.connect('MegaData.db')
+    cursor = conn.cursor()
     # Inicializar variáveis para armazenar os dados do concurso
     concurso = ""
     data_concurso = ""
@@ -71,9 +117,9 @@ def insert_in_database():
                 if concurso and data_concurso and apostas:
                     try:
                         # Inserir os dados na tabela do banco de dados
-                        cursor.execute("INSERT INTO MEGA_SENA (Concurso, Data_concurso, Aposta, Vencedor) VALUES (?, ?, ?, ?)",
+                        cursor.execute("INSERT INTO HIST_MEGA_SENA (Concurso, Data_concurso, Aposta, Vencedor) VALUES (?, ?, ?, ?)",
                                     (concurso, data_concurso, apostas, vencedor))
-                        conexao.commit()
+                        conn.commit()
                         # Limpar as variáveis
                         concurso = ""
                         data_concurso = ""
@@ -83,7 +129,7 @@ def insert_in_database():
                         print("Erro", str(e))
 
     # Fechar a conexão com o banco de dados
-    conexao.close()
+    cursor.close()
 
 def gerador_de_num():
 
