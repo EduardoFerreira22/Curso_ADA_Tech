@@ -15,6 +15,7 @@ st_f = {'f1':('M Hei PRC', 10, 'bold'),'f2':('Helvetica', 8,'bold','italic'),'f3
 		#CORES	LARANJA			BRANCO		 AZUL ESCURO	AZUL CEU	  VERDE			VERMELHO
 c: dict = {'1':'#e69138', '2':'#ffffff','3':'#033364', '4':'#f0ffff','5':'#44ab4c','6':'#e32636','7':'#000000'}
 root = Tk()
+#criando a class que executará a tela da aplicação 
 class Aplication:
     def __init__(self):
         self.root = root
@@ -23,6 +24,7 @@ class Aplication:
         self.windgets_app()
         root.mainloop()
         pass
+    #Função para todas as configurações da tela
     def winConfig(self):
         self.root.geometry("400x300")
         self.root.config(bg=c['3'])
@@ -38,6 +40,7 @@ class Aplication:
         # Define as coordenadas da janela
         self.root.geometry(f"{win_width}x{win_height}+{x}+{y}")
         #--------------------------------------------------------------------------------------------------------------------------------
+    #função que cria os frames da tela
     def frames(self):
         self.fm_superior = Frame(self.root,width=378, height=160)
         self.fm_superior.place_configure(x=10,y=45)
@@ -45,6 +48,7 @@ class Aplication:
         self.fm_baixo = Frame(self.root,width=378,height=70)
         self.fm_baixo.place_configure(x=10,y=215)
 
+    #Função que cria e exibe todos os Widgets da tela
     def windgets_app(self):
         self.style = ttk.Style()
         self.style.configure('my.DataEntry.TButton',
@@ -68,12 +72,28 @@ class Aplication:
 
         self.options= ttk.Combobox(self.fm_superior,values=['Sim','Não'])
         self.options.place_configure(x=215, y=70, width=50,height=25)
-        self.options.bind("<<ComboboxSelected>>", self.new_layout)
+        self.options.bind("<<ComboboxSelected>>", self.combobox_selected)
 
-    def new_layout(self,event=None):
+
+        self.valor_vencedor = None  # Variável para rastrear o Entry de valor premiado
+    #lógica das escolhas do ComboBox
+    def combobox_selected(self, event):
+        selected_option = self.options.get()
+        if selected_option == "Sim":
+            self.show_entry()
+        elif selected_option == "Não":
+            self.hide_entry()
+    
+    #Essa Função mostra o entry que recebe o valor que foi premiado no concurso apenas quando o Combobox chama a opção "Sim"
+    def show_entry(self,event=None):
         if self.options.get() == "Sim":
             self.valor_vencedor = Entry(self.fm_superior)
             self.valor_vencedor.place_configure(x=20,y=120,width=175, height=25)
+    # Função que esconde o entry que recebe o valor que foi premiado no concurso apenas quando o Combobox chama a opção "Não"
+    def hide_entry(self):
+        if self.valor_vencedor is not None:
+            self.valor_vencedor.place_forget()
+            self.valor_vencedor = None
 
 
 
